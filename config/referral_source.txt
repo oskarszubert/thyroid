@@ -1,0 +1,6 @@
+WEST
+STMW
+SVHC
+SVI
+SVHD
+other
