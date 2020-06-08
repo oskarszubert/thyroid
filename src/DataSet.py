@@ -1,4 +1,5 @@
 import re
+import os
 import pandas as pd
 import numpy as np
 from sklearn.feature_selection import SelectKBest
@@ -11,9 +12,7 @@ from sklearn.utils import shuffle
 class DataSet:
     def __init__(self, filename):
         self.referral_source = self.create_dict_from_file(filename)
-        self.delete_row_with_unused_data = False   # do not use it, just 4fun
-        self.change_unused_value_to_mean = True
-
+        self.change_unused_value_to_mean = False
 
     def read_file(self, filename, separator):
         try:
@@ -37,10 +36,6 @@ class DataSet:
 
     def cleanup(self, line, separator):
         tmp_element_list = []
-        if self.delete_row_with_unused_data:
-            if '?' in line:
-                return None
-            
 
         for element in line.split(separator):
             if element == 't':
@@ -129,15 +124,14 @@ class DataSet:
             for single_column in df.columns:
                 df[single_column] = df[single_column].replace(np.NaN, df[single_column].mean())
                 
-        return shuffle(df)     # shuffle df at the end
+        return shuffle(df)
 
 
 
     def univariate_selection(self, data, k_best):
-        X = data.iloc[:,0:k_best]  #independent columns
-        y = data.iloc[:,-1]    #target column i.e price range
+        X = data.iloc[:,0:k_best]
+        y = data.iloc[:,-1]
 
-        #apply SelectKBest class to extract top 10 best features
         bestfeatures = SelectKBest(score_func=chi2, k=k_best)
         fit = bestfeatures.fit(X,y)
         dfscores = pd.DataFrame(fit.scores_)
@@ -145,8 +139,12 @@ class DataSet:
         #concat two dataframes for better visualization 
         featureScores = pd.concat([dfcolumns,dfscores],axis=1)
         featureScores.columns = ['Specs','Score']  #naming the dataframe columns
-        print('Univariate Selection (chi2):')
-        print(featureScores.nlargest(k_best,'Score'))
+        # in case if you want to print this 
+        # print('Univariate Selection (chi2):')
+        # print(featureScores.nlargest(k_best,'Score'))
+
+        list_of_atrr = list(featureScores.nlargest(k_best,'Score')['Specs'])
+        return(list_of_atrr)
 
 
     def f_importance(self, data, n_attrs):
@@ -163,5 +161,30 @@ class DataSet:
             data.append([X.columns[i],  importance[i] ])
 
         df = pd.DataFrame(data=data, columns=['Specs','Score'], index=index)
-        print('Feature Importance (Extra Tree Classifier):')
-        print(df.to_string())
+        # in case if you want to print this 
+        # print('Feature Importance (Extra Tree Classifier):')
+        # print(df.to_string())
+
+        list_of_atrr = list(df['Specs'])
+        return(list_of_atrr)
+
+
+    def save_dataset_to_file(self, df, filename):
+        path = '../gen'
+        if not os.path.exists( path ):
+            os.makedirs( path )
+
+        filename += '.csv'
+        df.to_csv(os.path.join(path,filename),index=False, sep=',')
+
+        df = df.iloc[0:0]
+        dataset = []
+
+
+    # its dummy function, but its works
+    def normalize_value(self, df):
+        df = df.astype({'value': int})
+        df['value'] = df['value'].values - 1
+        df = df.astype({'value': str})
+
+        return df
