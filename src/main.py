@@ -1,6 +1,7 @@
 
 from DataSet import *
 from CrossValidation import *
+from datetime import datetime
 
 if __name__ == "__main__":
     gen_dir = '../gen'
@@ -57,6 +58,7 @@ if __name__ == "__main__":
                             df_tmp = df[f_selection[:number_of_features]]
                             mean_acc, mean_f1 = ds.cross_valid_and_fit_model(df_tmp,model,epochs=epochs)
                             tmp_row = [ filename,
+                                        mean_acc, 
                                         mean_f1, 
                                         epochs,
                                         momentum,
@@ -69,4 +71,4 @@ if __name__ == "__main__":
         result_columns=['filename','f1_score','acc','epochs','momentum','layers','feature_selection_name','number_of_features']
 
         df = pd.DataFrame(data=result_list, columns=result_columns)
-        df.to_excel( os.path.join( result_dir, filename+'_results.xlsx') )
+        df.to_excel( os.path.join( result_dir, filename+'_results' + datetime.now().strftime('%H_%M_%S') + '.xlsx') )

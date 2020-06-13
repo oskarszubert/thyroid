@@ -2,7 +2,6 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import metrics
 from tensorflow.keras import backend as K
-# from sklearn.metrics import  balanced_accuracy_score
 import sklearn
 
 class NetworkModel():
