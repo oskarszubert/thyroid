@@ -2,8 +2,14 @@
 from DataSet import *
 from CrossValidation import *
 from datetime import datetime
+from tensorflow.keras import backend as K
 
 if __name__ == "__main__":
+
+    config = tf.compat.v1.keras.backend.set_session(session={"CPU": 2})
+    K.set_session(tf.compat.v1.Session(config=config))
+
+
     gen_dir = '../gen'
     if not os.path.exists( gen_dir ):
         exit(-1)
