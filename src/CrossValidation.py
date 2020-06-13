@@ -9,6 +9,7 @@ class CrossValidation:
         n_splits = 2
         n_times = 5
         acc_sum = 0
+        f1_sum = 0
 
         X = df.drop(columns=['value'])
         Y = df['value'].values
@@ -22,13 +23,13 @@ class CrossValidation:
                 y_train, y_test = Y[train_index], Y[test_index]
 
                 X_train, y_train = balance_dataset(X_train, y_train)
-                X_test, y_test = balance_dataset(X_test, y_test)
 
                 model_history = model.fit(  X_train,
                                             y_train,
                                             epochs=epochs,
                                             validation_data=(X_test, y_test),
                                             verbose=1)
-                acc_sum += model_history.history['val_acc'][-1]
+                f1_sum += model_history.history['val_acc'][-1]
+                acc_sum += model_history.history['val_f1_score'][-1]
 
-        return acc_sum/(n_splits*n_times)
+        return acc_sum/(n_splits*n_times), f1_sum/(n_splits*n_times)

@@ -7,8 +7,6 @@ from sklearn.feature_selection import chi2
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.utils import shuffle
 
-# import matplotlib.pyplot as plt
-
 class DataSet:
     def __init__(self, filename):
         self.referral_source = self.create_dict_from_file(filename)

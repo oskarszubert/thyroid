@@ -1,10 +1,10 @@
 import pandas as pd
+import numpy as np
 from sklearn.utils import resample
 from sklearn.model_selection import train_test_split
 
 def df_shape(df):
     return df.shape
-
 
 def balance_dataset(df, df_y):
     df.insert(0, "value", df_y, True) 
@@ -24,7 +24,7 @@ def balance_dataset(df, df_y):
         tmp_list.append(resample(   tmp_df, 
                                     replace=True,            # sample with replacement
                                     n_samples=n_samples,     # to match majority class
-                                    random_state=123)   )        # reproducible results
+                                    random_state=np.random)   )        # reproducible results
     single_label_df_list = tmp_list
 
     for tmp_df in single_label_df_list:
