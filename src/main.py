@@ -16,14 +16,6 @@ if __name__ == "__main__":
 
     files_proposal = ['ann_thyroid', 'mean_thyroid0387', 'solid_thyroid0387']
 
-
-    epochs__proposal = [5]
-    momentum_proposal = [0.4]
-    ann_proposal = [[1],[3],[5],[7],[20],[1,3],[3,3],[3,5], [5,7], [5,20], [1,2,3],[3,5,7]]
-    # epochs__proposal = [5,10,15,20]
-    # momentum_proposal = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-    # sf_proposal = ['univ', 'impot']
-
     for filename in files_proposal:
         path_to_file = os.path.join( gen_dir, filename+'.csv')
 
@@ -43,12 +35,29 @@ if __name__ == "__main__":
         if filename == 'ann_thyroid':
             feature_selection_name = 'univ'
             number_of_features = 12
+            ann_proposal = [[7], [5,20]]
+            
+            epochs__proposal = [5,10,15,20]
+            # momentum_proposal = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+            momentum_proposal =  [0.4]
+
         elif filename == 'mean_thyroid0387':
             feature_selection_name = 'impot'
             number_of_features = 2
+            ann_proposal = [[5]]
+
+            epochs__proposal = [5,10,15,20]
+            # momentum_proposal = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+            momentum_proposal =  [0.4]
+
         elif filename == 'solid_thyroid0387':
             feature_selection_name = 'univ'
             number_of_features = 3
+            ann_proposal = [[5]]
+
+            epochs__proposal = [5,10,15,20]
+            # momentum_proposal = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+            momentum_proposal =  [0.4]
 
         if feature_selection_name == 'univ':
             f_selection = sf_univarate
