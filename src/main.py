@@ -15,6 +15,8 @@ if __name__ == "__main__":
     dataset = DataSet(filename='../config/referral_source.txt')
 
     files_proposal = ['ann_thyroid']
+    # files_proposal = ['mean_thyroid0387']
+    # files_proposal = ['solid_thyroid0387']
 
     for filename in files_proposal:
         path_to_file = os.path.join( gen_dir, filename+'.csv')
@@ -52,7 +54,7 @@ if __name__ == "__main__":
         elif filename == 'solid_thyroid0387':
             feature_selection_name = 'univ'
             number_of_features = 3
-            ann_proposal = [[5]]
+            ann_proposal = [[20], [5,20]]
 
             epochs__proposal = [5,10,15,20]
             # momentum_proposal = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
