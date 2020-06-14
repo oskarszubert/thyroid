@@ -5,11 +5,6 @@ from datetime import datetime
 from tensorflow.keras import backend as K
 
 if __name__ == "__main__":
-
-    config = tf.compat.v1.keras.backend.set_session(session={"CPU": 2})
-    K.set_session(tf.compat.v1.Session(config=config))
-
-
     gen_dir = '../gen'
     if not os.path.exists( gen_dir ):
         exit(-1)
@@ -22,13 +17,12 @@ if __name__ == "__main__":
     files_proposal = ['ann_thyroid', 'mean_thyroid0387', 'solid_thyroid0387']
 
 
-    ann_proposal = [[5]]
     epochs__proposal = [5]
-    momentum_proposal = [0.1]
-    # ann_proposal = [[1],[5],[7],[1,3],[3,5],[3,3],[1,2,3],[3,5,7]]
-    # epochs__proposal = [5,10,20]
-    # momentum_proposal = [0.0, 0.1, 0.3, 0.5, 0.7, 0.9]
-    sf_proposal = ['univ', 'impot']
+    momentum_proposal = [0.4]
+    ann_proposal = [[1],[3],[5],[7],[20],[1,3],[3,3],[3,5], [5,7], [5,20], [1,2,3],[3,5,7]]
+    # epochs__proposal = [5,10,15,20]
+    # momentum_proposal = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+    # sf_proposal = ['univ', 'impot']
 
     for filename in files_proposal:
         path_to_file = os.path.join( gen_dir, filename+'.csv')
@@ -46,35 +40,43 @@ if __name__ == "__main__":
         ds = CrossValidation()
 
         result_list = []
-        for feature_selection_name in sf_proposal:
-            tmp_row = []
-            if feature_selection_name == 'univ':
-                f_selection = sf_univarate
-            elif feature_selection_name == 'impot':
-                f_selection = sf_importance
-            for number_of_features in range(2, len(f_selection) ):
-                for layers in ann_proposal:
-                    for momentum in momentum_proposal:
-                        model = nm.create_model(layers=layers,
-                                                input_size=number_of_features-1, 
-                                                output_size=len(set(df['value'])) ,
-                                                momentum=momentum)
+        if filename == 'ann_thyroid':
+            feature_selection_name = 'univ'
+            number_of_features = 12
+        elif filename == 'mean_thyroid0387':
+            feature_selection_name = 'impot'
+            number_of_features = 2
+        elif filename == 'solid_thyroid0387':
+            feature_selection_name = 'univ'
+            number_of_features = 3
 
-                        for epochs in epochs__proposal:
-                            df_tmp = df[f_selection[:number_of_features]]
-                            mean_acc, mean_f1 = ds.cross_valid_and_fit_model(df_tmp,model,epochs=epochs)
-                            tmp_row = [ filename,
-                                        mean_acc, 
-                                        mean_f1, 
-                                        epochs,
-                                        momentum,
-                                        layers,
-                                        feature_selection_name,
-                                        number_of_features-1]
-                            print(tmp_row)
-                            result_list.append(tmp_row)
+        if feature_selection_name == 'univ':
+            f_selection = sf_univarate
+        elif feature_selection_name == 'impot':
+            f_selection = sf_importance
 
-        result_columns=['filename','f1_score','acc','epochs','momentum','layers','feature_selection_name','number_of_features']
+        tmp_row = []
+        for layers in ann_proposal:
+            for momentum in momentum_proposal:
+                model = nm.create_model(layers=layers,
+                                        input_size=number_of_features, 
+                                        output_size=len(set(df['value'])) ,
+                                        momentum=momentum)
+                for epochs in epochs__proposal:
+                    df_tmp = df[f_selection[:number_of_features+1]]
+                    mean_acc, mean_f1 = ds.cross_valid_and_fit_model(df_tmp,model,epochs=epochs)
+                    tmp_row = [ filename,
+                                mean_acc, 
+                                mean_f1, 
+                                epochs,
+                                momentum,
+                                layers,
+                                feature_selection_name,
+                                number_of_features]
+                    print(tmp_row)
+                    result_list.append(tmp_row)
+
+        result_columns=['filename','acc','f1_score','epochs','momentum','layers','feature_selection_name','number_of_features']
 
         df = pd.DataFrame(data=result_list, columns=result_columns)
         df.to_excel( os.path.join( result_dir, filename+'_results' + datetime.now().strftime('%H_%M_%S') + '.xlsx') )

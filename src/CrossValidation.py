@@ -29,7 +29,7 @@ class CrossValidation:
                                             epochs=epochs,
                                             validation_data=(X_test, y_test),
                                             verbose=1)
-                f1_sum += model_history.history['val_acc'][-1]
-                acc_sum += model_history.history['val_f1_score'][-1]
+                acc_sum += model_history.history['val_acc'][-1]
+                f1_sum += model_history.history['val_f1_score'][-1]
 
         return acc_sum/(n_splits*n_times), f1_sum/(n_splits*n_times)
