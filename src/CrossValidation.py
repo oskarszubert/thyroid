@@ -1,11 +1,14 @@
 from sklearn.model_selection import KFold, StratifiedKFold
 import numpy as np
+from datetime import datetime
+from sklearn.metrics import confusion_matrix 
 
 from NetworkModel import *
 from Balance import *
 
 class CrossValidation:
     def cross_valid_and_fit_model(self, df, model, epochs):
+        nm = NetworkModel()
         n_splits = 2
         n_times = 5
         acc_sum = 0
@@ -31,5 +34,9 @@ class CrossValidation:
                                             verbose=1)
                 acc_sum += model_history.history['val_acc'][-1]
                 f1_sum += model_history.history['val_f1_score'][-1]
+                filename = datetime.now().strftime('%H_%M_%S')
+                nm.create_learning_plots(model_history, filename )
+                nm.create_confusion_matrix(model, X_train, y_train, filename)
+
 
         return acc_sum/(n_splits*n_times), f1_sum/(n_splits*n_times)
